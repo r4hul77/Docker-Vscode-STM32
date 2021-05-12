@@ -1,0 +1,232 @@
+<sdf version='1.7'>
+  <model name='WithGlobalXYZ'>
+    <link name='base_link'>
+      <inertial>
+        <pose>-0.009403 0.010481 0.29236 0 -0 0</pose>
+        <mass>23.732</mass>
+        <inertia>
+          <ixx>0.177951</ixx>
+          <ixy>-0.0164333</ixy>
+          <ixz>-0.000215969</ixz>
+          <iyy>0.243875</iyy>
+          <iyz>2.26216e-05</iyz>
+          <izz>0.320077</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='left_front_axial' type='revolute'>
+      <pose relative_to='base_link'>-0.32415 -0.32034 0.20174 -3.14159 -0.52603 -3.14159</pose>
+      <parent>base_link</parent>
+      <child>left_front_wheel</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_front_wheel'>
+      <pose relative_to='left_front_axial'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0 0.072249 0 0 -0 0</pose>
+        <mass>12.1629</mass>
+        <inertia>
+          <ixx>0.163717</ixx>
+          <ixy>3.11102e-09</ixy>
+          <ixz>1.35188e-08</ixz>
+          <iyy>0.295574</iyy>
+          <iyz>9.88239e-07</iyz>
+          <izz>0.163717</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_front_wheel_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/left_front_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='left_front_wheel_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/left_front_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='left_rear_axial' type='revolute'>
+      <pose relative_to='base_link'>0.30535 -0.3211 0.20174 -3.14159 -0.25184 3.14159</pose>
+      <parent>base_link</parent>
+      <child>left_rear_wheel</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_rear_wheel'>
+      <pose relative_to='left_rear_axial'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0 0.072249 0 0 -0 0</pose>
+        <mass>12.1629</mass>
+        <inertia>
+          <ixx>0.163717</ixx>
+          <ixy>3.11102e-09</ixy>
+          <ixz>1.35188e-08</ixz>
+          <iyy>0.295574</iyy>
+          <iyz>9.88239e-07</iyz>
+          <izz>0.163717</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_rear_wheel_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/left_rear_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='left_rear_wheel_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/left_rear_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='right_front_axial' type='revolute'>
+      <pose relative_to='base_link'>-0.32415 0.19779 0.20174 0 -0.96608 0</pose>
+      <parent>base_link</parent>
+      <child>right_front_wheel</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_front_wheel'>
+      <pose relative_to='right_front_axial'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0 0.072249 0 0 -0 0</pose>
+        <mass>12.1629</mass>
+        <inertia>
+          <ixx>0.163717</ixx>
+          <ixy>3.11102e-09</ixy>
+          <ixz>1.35188e-08</ixz>
+          <iyy>0.295574</iyy>
+          <iyz>9.88239e-07</iyz>
+          <izz>0.163717</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_front_wheel_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/right_front_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='right_front_wheel_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/right_front_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='right_rear_axial' type='revolute'>
+      <pose relative_to='base_link'>0.30535 0.19703 0.20174 -3.14159 -0.52603 -3.14159</pose>
+      <parent>base_link</parent>
+      <child>right_rear_wheel</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_rear_wheel'>
+      <pose relative_to='right_rear_axial'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0 0.072249 0 0 -0 0</pose>
+        <mass>12.1629</mass>
+        <inertia>
+          <ixx>0.163717</ixx>
+          <ixy>3.11102e-09</ixy>
+          <ixz>1.35188e-08</ixz>
+          <iyy>0.295574</iyy>
+          <iyz>9.88239e-07</iyz>
+          <izz>0.163717</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_rear_wheel_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/right_rear_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='right_rear_wheel_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://skid_steer/meshes/right_rear_wheel.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
