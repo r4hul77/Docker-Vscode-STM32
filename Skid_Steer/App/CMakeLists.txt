@@ -17,8 +17,8 @@ file(GLOB_RECURSE SOURCE_GEN		"${CMAKE_BINARY_DIR}/generated/${BINARY_NAME}/*.c"
 file(GLOB_RECURSE SOURCES_CORE		"Core/Src/*")
 #file(GLOB_RECURSE SOURCES_DSP		"DSP/*")
 file(GLOB_RECURSE SOURCES_HAL		"Drivers/${HAL_DRIVERS_DIR}_HAL_Driver/Src/*" "Drivers/CMSIS/Device/ST/${HAL_DRIVERS_DIR}/Source/*")
-#file(GLOB_RECURSE SOURCES_FAT		"FATFS/*" "Middlewares/Third_Party/*")
-file(GLOB_RECURSE SOURCES_USR		"User/Src/*" "../General/Src/*")
+file(GLOB_RECURSE SOURCES_FAT		"FATFS/*" "Middlewares/Third_Party/*")
+file(GLOB_RECURSE SOURCES_USR		"User/src/*" "../General/Src/*")
 
 # Подключаем директории с которыми придётся работать
 include_directories(
@@ -32,10 +32,10 @@ include_directories(
 		#DSP/Inc
 		# HAL
 		Drivers/${HAL_DRIVERS_DIR}_HAL_Driver/Inc
-		# FATFS
-		#FATFS/App
-		#FATFS/Target
-		#Middlewares/Third_Party/FatFs/src
+		FATFS
+		FATFS/App
+		FATFS/Target
+		Middlewares/Third_Party/FatFs/src
 		# User
 		User/Inc
 		../General/Inc
@@ -50,7 +50,7 @@ set(LINKER_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/linker_script.ld)
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}.map,--gc-sections,--undefined=uxTopUsedPriority,--print-memory-usage${LINKER_RELEASE} -T ${LINKER_SCRIPT} ${LINKER_FLAGS}")
 
 # Collecting project sources, modules, etc. in elf
-add_executable(${BINARY_NAME}.elf ${SOURCE_GEN} ${SOURCES_CORE} ${SOURCES_HAL} ${SOURCES_USR}) # ${SOURCES_DSP} ${SOURCES_FAT}
+add_executable(${BINARY_NAME}.elf ${SOURCE_GEN} ${SOURCES_CORE} ${SOURCES_HAL} ${SOURCES_USR} ${SOURCES_FAT}) # ${SOURCES_DSP} # {SOURCES_FAT}
 target_link_libraries(${BINARY_NAME}.elf ${BINARY_NAME}_CMSIS)
 
 # Convert elf to hex and bin
