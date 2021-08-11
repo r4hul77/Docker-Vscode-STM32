@@ -30,3 +30,7 @@ void Wheel::run(float bVoltage){
     float voltagePercent = _pidController.update(_refVel, velNow)/ bVoltage;
     _motor.run(voltagePercent);
 }
+
+void Wheel::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen){
+    
+}

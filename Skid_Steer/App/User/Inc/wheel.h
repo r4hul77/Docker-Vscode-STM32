@@ -22,6 +22,22 @@ struct WheelParams{
   float c;
   uint8_t filterSize;
 
+  WheelParams(float radius,
+              TIM_HandleTypeDef encoderTimer,
+              TIM_HandleTypeDef pwmTimer,
+              Motor::channel motorChannel,
+              unsigned int motorChannelName,
+              PID::PIDParams pidParams,
+              //float dt, Commented for future use
+              ADC_HandleTypeDef adcHandle,
+              float m,
+              float c,
+              uint8_t filterSize): radius(radius), encoderTimer(encoderTimer), pwmTimer(pwmTimer),
+                                   motorChannel(motorChannel), motorChannelName(motorChannelName),
+                                   pidParams(pidParams), adcHandle(adcHandle), m(m), c(c){
+                                     
+                                   }
+
 
 };
 class Wheel{
@@ -45,6 +61,8 @@ class Wheel{
     void run(float bVoltage);
 
     void setRefVel(float refVel);
+
+    void parseAndDecide(char* buffer, int& pos, uint16_t bufferLen);
 
 };   
 
