@@ -1,21 +1,50 @@
 #ifndef WHEEL
 #define WHEEL
 
-#include "current_sensor.h"
+#include "PID.h"
+#include "adc_device.h"
 #include "motor.h"
 #include "encoder.h"
+#include "adc.h"
+#include "utils.h"
 
+
+struct WheelParams{
+  float radius;
+  TIM_HandleTypeDef encoderTimer;
+  TIM_HandleTypeDef pwmTimer;
+  Motor::channel motorChannel;
+  unsigned int motorChannelName;
+  PID::PIDParams pidParams;
+  //float dt; Commented for future use
+  ADC_HandleTypeDef adcHandle;
+  float m;
+  float c;
+  uint8_t filterSize;
+
+
+};
 class Wheel{
 
-    CurrentSensor _currentSensor;
+    AdcDevice _currentSensor;
     Motor _motor;
     float _radius;
     Encoder _encoder;
+    PID _pidController;
+    movingAvgFilter<float> _velFilter;
+    uint32_t _pTicks;
+    float _refVel;
 
   public:
 
-    Wheel(CurrentSensor& currentSensor, Motor& motor, Encoder& encoder);
 
+    Wheel(WheelParams&);
+
+    void update();
+
+    void run(float bVoltage);
+
+    void setRefVel(float refVel);
 
 };   
 

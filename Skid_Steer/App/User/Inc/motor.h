@@ -5,17 +5,23 @@
 
 class Motor{
 
-    TIM_HandleTypeDef _pwmTimer;
+  public:
     enum channel{
       CHANNEL1=0,
       CHANNEL2
-    } _channelNo;
+    };
+
+  private:
+    
+    TIM_HandleTypeDef _pwmTimer;
+    channel _channelNo;
 
     unsigned int _channel;
 
   public:
 
-    Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel channelNo, unsigned int channel);
+
+    Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel& channelNo, unsigned int& channel);
 
     void run(float &voltagePercent);
 

@@ -1,6 +1,6 @@
 #include "motor.h"
 
-Motor::Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel channelNo, unsigned int channel):_pwmTimer(pwmTimer), _channelNo(channelNo),  _channel(channel){
+Motor::Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel& channelNo, unsigned int& channel):_pwmTimer(pwmTimer), _channelNo(channelNo),  _channel(channel){
     init();
 }
 
