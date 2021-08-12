@@ -121,6 +121,9 @@ void Robot::run()
 
 void Robot::setRefSpeeds()
 {
+	//v is velocity, om is angular velocity with x forward and z upwards
+	//lv is velocity of left wheel and rv is velocity of right wheel
+	//tw is track width
 	//2*v = lv + rv
 	//om*0.5*tw = (lv - rv)
 	//lv = v + 0.25*tw*om

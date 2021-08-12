@@ -25,7 +25,7 @@ class Motor
 	public:
 
 
-		Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel& channelNo, unsigned int& channel);
+		Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel channelNo, unsigned int channel);
 
 		void run(float& voltagePercent);
 

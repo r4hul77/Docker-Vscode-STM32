@@ -3,21 +3,25 @@
 
 #include "tim.h"
 
-class Encoder{
-    
-    enum OverFlow{
-        NoOverFlow,
-        NegOverFLow,
-        PosOverFlow,
-    } overflow;
-    uint32_t _pticks;
-    TIM_HandleTypeDef _timer;
+class Encoder
+{
 
-  public:
+		enum OverFlow
+		{
+			NoOverFlow,
+			NegOverFLow,
+			PosOverFlow,
+		} overflow;
+		uint32_t _pticks;
+		TIM_HandleTypeDef _timer;
 
-    Encoder(TIM_HandleTypeDef & timer);
+	public:
 
-    int16_t update();
-    
+		Encoder(TIM_HandleTypeDef& timer);
+
+		int16_t update();
+
+		uint16_t sample();
+
 };
 #endif

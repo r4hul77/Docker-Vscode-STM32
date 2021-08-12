@@ -1,5 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include <stdint.h>
+
 
 void parseFloat(char* buffer, int& pos, uint16_t bufferLen, float& ret);
 template <class T>

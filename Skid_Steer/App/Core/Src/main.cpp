@@ -28,6 +28,9 @@
 #include "usb_otg.h"
 #include "gpio.h"
 
+#include <string.h>
+#include <stdio.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Robot.h"
@@ -40,8 +43,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define ADC_SENSORS 6
-uint16_t ADC_Values[ADC_SENSORS] = {0};
+#define ADC_SENSORS 12
+uint16_t ADC_Values[ADC_SENSORS];
+volatile uint8_t serialFinished=0;
+char msg [100];
+char receive [6];
 #define TRACKWIDTH 1
 #define WHEELBASE 1
 #define RADIUS (float)1.0
@@ -83,6 +89,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+  
 
   /* USER CODE BEGIN Init */
 
@@ -109,6 +116,8 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM5_Init();
   MX_UART7_Init();
+
+  
   /* USER CODE BEGIN 2 */
   
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *) ADC_Values, ADC_SENSORS);
@@ -121,18 +130,53 @@ int main(void)
               wheelBL(RADIUS, htim4, htim1, Motor::channel::CHANNEL4, TIM_CHANNEL_4, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
               wheelBR(RADIUS, htim3, htim1, Motor::channel::CHANNEL3, TIM_CHANNEL_3, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25);
 
-  RobotParams robotParams(wheelFL, wheelFR, wheelBL, wheelBR, voltSensor, currentSensor, 0, 0, WHEELBASE, TRACKWIDTH);
+  //RobotParams robotParams(wheelFL, wheelFR, wheelBL, wheelBR, voltSensor, currentSensor, 0, 0, WHEELBASE, TRACKWIDTH);
+  Motor fr(htim1, Motor::channel::CHANNEL1, TIM_CHANNEL_1);
+  AdcDevice batVolt(voltSensor);
+  AdcDevice curSensor(currentSensor);
+  Encoder enc1(htim5);
 
-  Robot robot(robotParams);  
+  //Start UART
+  sprintf(msg,"Start Transmission \r\n");
+  HAL_UART_Receive_DMA(&huart3,(uint8_t*)receive, 6);
+  HAL_UART_Transmit_DMA(&huart3,(uint8_t*)msg,strlen(msg));
+
+
+
+  //Robot robot(robotParams);  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  float voltage = 0;
+  float current = 0;
+  uint16_t val = 0;
+  float speed = 0.1;
   while (1)
   {
+    speed += 0.005;
+    if(speed >= 1)
+      speed = 0.005;
+    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    fr.run(speed);
     /* USER CODE END WHILE */
+    batVolt.update();
+    curSensor.update();
+    enc1.update();
+    voltage = batVolt.sample();
+    current = curSensor.sample();
+    val = enc1.sample();
 
+    if ((serialFinished == 1)) 
+    {
+      sprintf(msg, "Voltage = %f \n Current = %f \n Encoder Ticks : %d \n ", voltage, current, val);
+      HAL_UART_Transmit_DMA(&huart3, (uint8_t* )msg, strlen(msg));
+      serialFinished = 0;
+    }
+
+    
     /* USER CODE BEGIN 3 */
+    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
@@ -203,6 +247,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
 
   /* USER CODE END Callback 1 */
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  //HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_14);
+  serialFinished = 1;
+}
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  HAL_UART_Receive_DMA(&huart3,(uint8_t*)receive,6);
+  serialFinished =1;
 }
 
 /**
