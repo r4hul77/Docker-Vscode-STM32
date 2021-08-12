@@ -1,11 +1,11 @@
 #include "adc_device.h"
 
-AdcDevice::AdcDevice(ADC_HandleTypeDef &adc, float& m, float& c):_adc(adc), _m(m), _c(c), _val(0){
+AdcDevice::AdcDevice(ADCParams& params):buffer(params.buffer), _m(params.m), _c(params.c), _val(0), idx(params.idx){
     init();
 }
 
 void AdcDevice::update(){
-    _val =  _m*(float)HAL_ADC_GetValue(&_adc) + _c;
+    _val =  _m*(float)buffer[idx] + _c;
 }
 
 float AdcDevice::get_m(){
@@ -22,7 +22,6 @@ void AdcDevice::parseAndSetParams(char* buffer, int& pos, uint16_t bufferLen){
 }
 
 void AdcDevice::init(){
-    HAL_ADC_Start(&_adc);
 }
 
 float AdcDevice::sample(){

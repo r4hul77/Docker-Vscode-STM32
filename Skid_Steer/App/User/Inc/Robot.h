@@ -12,13 +12,9 @@ struct RobotParams{
     WheelParams wheelBLParams;
     WheelParams wheelBRParams;
     
-    ADC_HandleTypeDef voltageSensorHandle;
-    float votlageSensorM;
-    float voltageSensorC;
+    ADCParams voltageParams;
     
-    ADC_HandleTypeDef currentSensorHandle;
-    float currentSensorM;
-    float currentSensorC;
+    ADCParams currentSensorParams;
 
     float refV;
     float refOmega;
@@ -29,22 +25,16 @@ struct RobotParams{
                 WheelParams wheelFRParams,
                 WheelParams wheelBLParams,
                 WheelParams wheelBRParams,
-                ADC_HandleTypeDef voltageSensorHandle,
-                float votlageSensorM,
-                float voltageSensorC,
-                ADC_HandleTypeDef currentSensorHandle,
-                float currentSensorM,
-                float currentSensorC,
+                ADCParams voltageParams,
+                ADCParams currentSensorParams,
                 float refV,
                 float refOmega,
                 float wheelBase,
                 float trackWidth): wheelFLParams(wheelFLParams), wheelFRParams(wheelFRParams),
                                    wheelBRParams(wheelBRParams), wheelBLParams(wheelBLParams),
-                                   voltageSensorHandle(voltageSensorHandle), votlageSensorM(votlageSensorM),
-                                   voltageSensorC(voltageSensorC), currentSensorHandle(currentSensorHandle),
-                                   currentSensorM(currentSensorM), currentSensorC(currentSensorC),
+                                   voltageParams(voltageParams), currentSensorParams(curerntSensorParams),
                                    refV(refV), refOmega(refOmega), wheelBase(wheelBase), trackWidth(trackWidth){
-                                       
+
                                    }
 
 };

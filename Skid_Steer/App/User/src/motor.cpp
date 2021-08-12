@@ -13,10 +13,24 @@ void Motor::init(){
 
 void Motor::run(float &voltagePercent){
     uint32_t ticks = 1500 + voltagePercent*500 -1;
-    if(_channel == CHANNEL1)
-        _pwmTimer.Instance->CCR1 =ticks;
-    else
-        _pwmTimer.Instance->CCR2 = ticks;
     
+    switch (_channel)
+    {
+    case CHANNEL1:
+        _pwmTimer.Instance->CCR1 =ticks;
+        break;
+    case CHANNEL2:
+        _pwmTimer.Instance->CCR2 =ticks;
+        break;
+    case CHANNEL3:
+        _pwmTimer.Instance->CCR3 =ticks;
+        break;
+    case CHANNEL4:
+        _pwmTimer.Instance->CCR4 =ticks;
+        break;
+    default:
+        break;
+    }
+       
     HAL_TIM_PWM_Start(&_pwmTimer, _channel);
 }

@@ -2,7 +2,7 @@
 
 
 Wheel::Wheel(WheelParams& params):
-    _currentSensor(params.adcHandle, params.m, params.c),
+    _currentSensor(params.adcParams),
     _motor(params.pwmTimer, params.motorChannel, params.motorChannelName),
     _radius(params.radius),
     _encoder(params.encoderTimer),
@@ -32,5 +32,5 @@ void Wheel::run(float bVoltage){
 }
 
 void Wheel::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen){
-    
+
 }

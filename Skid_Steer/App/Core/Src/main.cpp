@@ -30,7 +30,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "encoder.h"
+#include "Robot.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,6 +40,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define ADC_SENSORS 6
+uint16_t ADC_Values[ADC_SENSORS] = {0};
+#define TRACKWIDTH 1
+#define WHEELBASE 1
+#define RADIUS (float)1.0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -105,18 +110,28 @@ int main(void)
   MX_TIM5_Init();
   MX_UART7_Init();
   /* USER CODE BEGIN 2 */
-  Encoder encoderLF(htim3);
+  
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *) ADC_Values, ADC_SENSORS);
+  ADCParams voltSensor(ADC_Values, 0, 1, 0), currentSensor(ADC_Values, 1, 1, 0),
+            currentFL(ADC_Values, 2, 1, 0), currentFR(ADC_Values, 3, 1, 0),
+            currentBL(ADC_Values, 4, 1, 0), currentBR(ADC_Values, 5, 1, 0);
+
+  WheelParams wheelFL(RADIUS, htim2, htim1, Motor::channel::CHANNEL2, TIM_CHANNEL_2, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
+              wheelFR(RADIUS, htim5, htim1, Motor::channel::CHANNEL1, TIM_CHANNEL_1, PID::PIDParams(1, 0, 0, 50), currentFR, (uint8_t)25),
+              wheelBL(RADIUS, htim4, htim1, Motor::channel::CHANNEL4, TIM_CHANNEL_4, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
+              wheelBR(RADIUS, htim3, htim1, Motor::channel::CHANNEL3, TIM_CHANNEL_3, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25);
+
+  RobotParams robotParams(wheelFL, wheelFR, wheelBL, wheelBR, voltSensor, currentSensor, 0, 0, WHEELBASE, TRACKWIDTH);
+
+  Robot robot(robotParams);  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int16_t val;
   while (1)
   {
     /* USER CODE END WHILE */
-    val = encoderLF.update();
-    HAL_Delay(500);
-    HAL_GPIO_TogglePin(GPIOB, LD1_Pin);
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

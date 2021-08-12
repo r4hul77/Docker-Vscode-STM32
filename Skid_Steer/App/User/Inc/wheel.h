@@ -17,10 +17,9 @@ struct WheelParams{
   unsigned int motorChannelName;
   PID::PIDParams pidParams;
   //float dt; Commented for future use
-  ADC_HandleTypeDef adcHandle;
-  float m;
-  float c;
+  ADCParams adcParams;
   uint8_t filterSize;
+  uint8_t idx;
 
   WheelParams(float radius,
               TIM_HandleTypeDef encoderTimer,
@@ -29,13 +28,11 @@ struct WheelParams{
               unsigned int motorChannelName,
               PID::PIDParams pidParams,
               //float dt, Commented for future use
-              ADC_HandleTypeDef adcHandle,
-              float m,
-              float c,
+              ADCParams& adcParams,
               uint8_t filterSize): radius(radius), encoderTimer(encoderTimer), pwmTimer(pwmTimer),
                                    motorChannel(motorChannel), motorChannelName(motorChannelName),
-                                   pidParams(pidParams), adcHandle(adcHandle), m(m), c(c){
-                                     
+                                   pidParams(pidParams), adcParams(adcParams), idx(idx){
+
                                    }
 
 
