@@ -3,29 +3,33 @@
 
 #include "tim.h"
 
-class Motor{
+class Motor
+{
 
-  public:
-    enum channel{
-      CHANNEL1=0,
-      CHANNEL2
-    };
+	public:
+		enum channel
+		{
+			CHANNEL1 = 0,
+			CHANNEL2,
+			CHANNEL3,
+			CHANNEL4
+		};
 
-  private:
-    
-    TIM_HandleTypeDef _pwmTimer;
-    channel _channelNo;
+	private:
 
-    unsigned int _channel;
+		TIM_HandleTypeDef _pwmTimer;
+		channel _channelNo;
 
-  public:
+		unsigned int _channel;
+
+	public:
 
 
-    Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel& channelNo, unsigned int& channel);
+		Motor(TIM_HandleTypeDef& pwmTimer, Motor::channel& channelNo, unsigned int& channel);
 
-    void run(float &voltagePercent);
+		void run(float& voltagePercent);
 
-    void init();
+		void init();
 
 };
 

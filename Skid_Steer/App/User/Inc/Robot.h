@@ -5,66 +5,69 @@
 #include "PID.h"
 #include "message_in.h"
 
-struct RobotParams{
-    
-    WheelParams wheelFLParams;
-    WheelParams wheelFRParams;
-    WheelParams wheelBLParams;
-    WheelParams wheelBRParams;
-    
-    ADCParams voltageParams;
-    
-    ADCParams currentSensorParams;
+struct RobotParams
+{
 
-    float refV;
-    float refOmega;
-    float wheelBase;
-    float trackWidth;
+	WheelParams wheelFLParams;
+	WheelParams wheelFRParams;
+	WheelParams wheelBLParams;
+	WheelParams wheelBRParams;
 
-    RobotParams(WheelParams wheelFLParams,
-                WheelParams wheelFRParams,
-                WheelParams wheelBLParams,
-                WheelParams wheelBRParams,
-                ADCParams voltageParams,
-                ADCParams currentSensorParams,
-                float refV,
-                float refOmega,
-                float wheelBase,
-                float trackWidth): wheelFLParams(wheelFLParams), wheelFRParams(wheelFRParams),
-                                   wheelBRParams(wheelBRParams), wheelBLParams(wheelBLParams),
-                                   voltageParams(voltageParams), currentSensorParams(curerntSensorParams),
-                                   refV(refV), refOmega(refOmega), wheelBase(wheelBase), trackWidth(trackWidth){
+	ADCParams voltageParams;
 
-                                   }
+	ADCParams currentSensorParams;
+
+	float refV;
+	float refOmega;
+	float wheelBase;
+	float trackWidth;
+
+	RobotParams(WheelParams wheelFLParams,
+				WheelParams wheelFRParams,
+				WheelParams wheelBLParams,
+				WheelParams wheelBRParams,
+				ADCParams voltageParams,
+				ADCParams currentSensorParams,
+				float refV,
+				float refOmega,
+				float wheelBase,
+				float trackWidth): wheelFLParams(wheelFLParams), wheelFRParams(wheelFRParams),
+		wheelBLParams(wheelBLParams), wheelBRParams(wheelBRParams),
+		voltageParams(voltageParams), currentSensorParams(currentSensorParams),
+		refV(refV), refOmega(refOmega), wheelBase(wheelBase), trackWidth(trackWidth)
+	{
+
+	}
 
 };
 
 
-class Robot{
+class Robot
+{
 
-    Wheel wheelFL;
-    Wheel wheelFR;
-    Wheel wheelBL;
-    Wheel wheelBR;
-    AdcDevice batVolt;
-    AdcDevice currentSensor;
-    
-    float refV;
-    float refOmega;
-    float wheelBase;
-    float trackWidth;
+		Wheel wheelFL;
+		Wheel wheelFR;
+		Wheel wheelBL;
+		Wheel wheelBR;
+		AdcDevice batVolt;
+		AdcDevice currentSensor;
 
-  public:
-    
-    Robot(RobotParams&);
+		float refV;
+		float refOmega;
+		float wheelBase;
+		float trackWidth;
 
-    void parseAndDecide(char* buffer, int& pos, uint16_t bufferLen);
+	public:
 
-    void run();
+		Robot(RobotParams&);
 
-    void update();
-    
-    void setRefSpeeds();
+		void parseAndDecide(char* buffer, int& pos, uint16_t bufferLen);
+
+		void run();
+
+		void update();
+
+		void setRefSpeeds();
 
 };
 

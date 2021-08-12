@@ -4,28 +4,48 @@
 #include "utils.h"
 
 
-class AdcDevice{
-    ADC_HandleTypeDef _adc;
-    float _m;
-    float _c; //converts y = mx +c, where x is adc reading and c is the bias and m is scale
-    float _val;
+struct ADCParams
+{
+	uint16_t* buffer;
+	uint8_t idx;
+	float m;
+	float c;
+
+	ADCParams(uint16_t* buffer, uint8_t idx, float m, float c):
+		buffer(buffer), idx(idx), m(m), c(c)
+	{
+
+	}
+};
+
+class AdcDevice
+{
+		uint16_t* buffer;
+		float _m;
+		float _c; //converts y = mx +c, where x is adc reading and c is the bias and m is scale
+		float _val;
+		uint8_t idx;
 
 
-  public:
+	public:
 
-    AdcDevice(ADC_HandleTypeDef &adc, float& m, float& c);
+		AdcDevice(ADCParams& params);
 
-    void init();
+		void init();
 
-    void update();
+		void update();
 
-    float get_m();
+		float get_m();
 
-    float get_c();
+		float get_c();
 
-    void parseAndSetParams(char* buffer, int &pos, uint16_t bufferLen);
+		void set_m(float m);
 
-    float sample();
-  };
+		void set_c(float c);
+
+		void parseAndSetParams(char* buffer, int& pos, uint16_t bufferLen);
+
+		float sample();
+};
 
 #endif
