@@ -18,9 +18,8 @@ Robot::Robot(RobotParams& params):
 void Robot::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen)
 {
 
-	message::Idx msgType = (message::Idx)buffer[0];
-	uint8_t msgLen = (uint8_t)buffer[1];
-	pos = 2;
+	message::Idx msgType = (message::Idx)buffer[pos++];
+	uint8_t msgLen = (uint8_t)buffer[pos++];
 
 	switch (msgType)
 	{
@@ -33,28 +32,18 @@ void Robot::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen)
 	}
 	case message::Idx::RobotConfig:
 	{
-		robot_config::ConfigIdx idx = (robot_config::ConfigIdx)buffer[++pos];
+		robot_config::ConfigIdx idx = (robot_config::ConfigIdx)buffer[pos++];
 
 		switch (idx)
 		{
 		case robot_config::ConfigIdx::VoltageConfig:
 		{
-			float m = 0;
-			parseFloat(buffer, pos, bufferLen, m);
-			batVolt.set_m(m);
-			float c = 0;
-			parseFloat(buffer, pos, bufferLen, c);
-			batVolt.set_c(c);
+			batVolt.parseAndSetParams(buffer, pos, bufferLen);
 			break;
 		}
 		case robot_config::ConfigIdx::CurrentConfig:
 		{
-			float m = 0;
-			parseFloat(buffer, pos, bufferLen, m);
-			batVolt.set_m(m);
-			float c = 0;
-			parseFloat(buffer, pos, bufferLen, c);
-			batVolt.set_c(c);
+			currentSensor.parseAndSetParams(buffer, pos, bufferLen);
 			break;
 		}
 		case robot_config::ConfigIdx::GeometryConfig:
@@ -70,7 +59,7 @@ void Robot::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen)
 	}
 	case message::Idx::WheelConfig:
 	{
-		wheel_config::WheelIdx idx = (wheel_config::WheelIdx)buffer[++pos];
+		wheel_config::WheelIdx idx = (wheel_config::WheelIdx)buffer[pos++];
 
 		switch (idx)
 		{

@@ -32,5 +32,27 @@ void Wheel::run(float bVoltage){
 }
 
 void Wheel::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen){
+    wheel_config::config idx = (wheel_config::config)buffer[pos++];
+
+    switch (idx)
+    {
+    case wheel_config::config::SetPidGains:{
+            _pidController.parseAndSetParams(buffer, pos, bufferLen);
+    
+        break;
+    }
+    case wheel_config::config::CurrentSensorConfig:{
+            _currentSensor.parseAndSetParams(buffer, pos, bufferLen);
+    
+        break;
+    }
+    case wheel_config::config::Radius:{
+            parseFloat(buffer, pos, bufferLen, _radius);
+    
+        break;
+        
+    default:
+        break;
+    }
 
 }

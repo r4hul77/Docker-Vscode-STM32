@@ -7,7 +7,7 @@
 #include "encoder.h"
 #include "adc.h"
 #include "utils.h"
-
+#include "message_in.h"
 
 struct WheelParams
 {
