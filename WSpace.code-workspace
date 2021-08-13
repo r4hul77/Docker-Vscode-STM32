@@ -52,5 +52,8 @@
         "astyle.cmd_options": [
             "--options=${workspaceFolder}/.astylerc",
         ],
+        "files.associations": {
+            "fatfs.h": "c"
+        },
     }
 }
