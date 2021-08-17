@@ -24,11 +24,11 @@ struct WheelMsgOut
 	{
 		std::memcpy(buffer + pos, (char* ) (uint8_t* ) &idx, 1);
 		pos ++;
-		float2Bytes(buffer, bufferLen, pos);
-		float2Bytes(buffer, bufferLen, pos);
+		float2Bytes(buffer, bufferLen, pos, bufferLen);
+		float2Bytes(buffer, bufferLen, pos, bufferLen);
 		std::memcpy(buffer + pos, (char* ) &ticks,  2);
 		pos += 2;
-		float2Bytes(buffer, bufferLen, pos);
+		float2Bytes(buffer, bufferLen, pos, bufferLen);
 
 	}
 };
@@ -56,9 +56,9 @@ struct RobotMsgOut
 
 	void convertToBytes(char* buffer, uint16_t bufferLen, int& pos)
 	{
-		uint322Bytes(buffer, _time, pos);
-		float2Bytes(buffer, batVolt, pos);
-		float2Bytes(buffer, current, pos);
+		uint322Bytes(buffer, _time, pos, bufferLen);
+		float2Bytes(buffer, batVolt, pos, bufferLen);
+		float2Bytes(buffer, current, pos, bufferLen);
 		wheelFR.convertToBytes(buffer, bufferLen, pos);
 		wheelFL.convertToBytes(buffer, bufferLen, pos);
 		wheelBR.convertToBytes(buffer, bufferLen, pos);

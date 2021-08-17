@@ -6,11 +6,11 @@
 
 #define PI 3.1415926535
 
-void parseFloat(char* buffer, int& pos, uint16_t bufferLen, float& ret);
+bool parseFloat(char* buffer, int& pos, uint16_t bufferLen, float& ret);
 
-void float2Bytes(char* bufferm, float FloatVarible, int& pos);
+bool float2Bytes(char* bufferm, float FloatVarible, int& pos, uint16_t bufferLen);
 
-void uint322Bytes(char* bufferm, uint32_t uint32Variable, int& pos);
+bool uint322Bytes(char* bufferm, uint32_t uint32Variable, int& pos, uint16_t bufferLen);
 
 
 template <class T>
