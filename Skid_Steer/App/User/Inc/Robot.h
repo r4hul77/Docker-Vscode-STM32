@@ -69,6 +69,8 @@ class Robot
 
 		void setRefSpeeds();
 
+		RobotMsgOut getInfo(uint32_t ticks);
+
 };
 
 
