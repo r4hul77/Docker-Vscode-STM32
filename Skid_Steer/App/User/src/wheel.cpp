@@ -21,7 +21,7 @@ void Wheel::update()
 	int16_t deltaTicks = (ticks - _pTicks);
 	_ticks = deltaTicks;
 	_pTicks = ticks;
-	_velFilter.update(((float)deltaTicks * 1000.0 / PPR) / deltaTicks);
+	_velFilter.update(((float)val / PPR) * (2 * PI) * (float)1000 / deltaTicks);
 
 }
 
