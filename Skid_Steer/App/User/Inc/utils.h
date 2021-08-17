@@ -1,9 +1,16 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include <stdint.h>
-
+#include <cstdint>
+#include <cstring>
 
 void parseFloat(char* buffer, int& pos, uint16_t bufferLen, float& ret);
+
+void float2Bytes(char* bufferm, float FloatVarible, int& pos);
+
+void uint322Bytes(char* bufferm, uint32_t uint32Variable, int& pos);
+
+
 template <class T>
 struct movingAvgFilter
 {

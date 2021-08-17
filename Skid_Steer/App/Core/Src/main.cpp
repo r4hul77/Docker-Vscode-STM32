@@ -28,6 +28,7 @@
 #include "usb_otg.h"
 #include "gpio.h"
 
+
 #include <string.h>
 #include <stdio.h>
 
@@ -45,6 +46,7 @@
 /* USER CODE BEGIN PD */
 #define ADC_SENSORS 12
 #define RECIVE_BUFFER_SIZE 2048
+#define SEND_BUFFER_SIZE 2048
 #define TRACKWIDTH 1
 #define WHEELBASE 1
 #define RADIUS (float)1.0
@@ -54,6 +56,7 @@ volatile uint8_t serialFinished=0;
 char msg [100];
 char g_reciveBuffer [RECIVE_BUFFER_SIZE];
 char g_reciveBufferCopied [RECIVE_BUFFER_SIZE];
+char g_sendBuffer[SEND_BUFFER_SIZE];
 bool g_parseFlag(false);
 /* USER CODE END PD */
 
@@ -142,7 +145,7 @@ int main(void)
 
   //Start UART
   HAL_UARTEx_ReceiveToIdle_DMA(&huart3,(uint8_t*)g_reciveBuffer, 256);
-  //HAL_UART_Transmit_DMA(&huart3,(uint8_t*)receive, 256);
+
 
 
 
@@ -151,10 +154,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  float voltage = 0;
-  float current = 0;
-  uint16_t val = 0;
-  float speed = 0.1;
   uint32_t pTicks = HAL_GetTick();
   uint32_t lTicks = HAL_GetTick();
   while (1)
@@ -176,6 +175,10 @@ int main(void)
     if(Ticks- pTicks >= SAMPLING_TICKS){
       robot.update();
       robot.run();
+      int pos = 0;
+      RobotMsgOut msg = robot.getInfo(Ticks);
+      msg.convertToBytes(g_sendBuffer, SEND_BUFFER_SIZE, pos);
+      HAL_UART_Transmit_DMA(&huart3,(uint8_t*)g_sendBuffer, 72);
       pTicks += SAMPLING_TICKS;
     }
     

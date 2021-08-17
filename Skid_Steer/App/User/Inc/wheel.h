@@ -1,6 +1,8 @@
 #ifndef WHEEL
 #define WHEEL
 
+#define PPR 3000.0
+
 #include "PID.h"
 #include "adc_device.h"
 #include "motor.h"
@@ -8,6 +10,7 @@
 #include "adc.h"
 #include "utils.h"
 #include "message_in.h"
+#include "message_out.h"
 
 struct WheelParams
 {
@@ -48,7 +51,11 @@ class Wheel
 		PID _pidController;
 		movingAvgFilter<float> _velFilter;
 		uint32_t _pTicks;
+		int16_t _ticks;
 		float _refVel;
+		float output;
+		float velNow;
+
 
 	public:
 
@@ -62,6 +69,8 @@ class Wheel
 		void setRefVel(float refVel);
 
 		void parseAndDecide(char* buffer, int& pos, uint16_t bufferLen);
+
+		WheelMsgOut getWheelMsg(wheel_config::WheelIdx id);
 
 };
 

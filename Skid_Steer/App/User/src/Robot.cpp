@@ -125,3 +125,13 @@ void Robot::setRefSpeeds()
 	wheelBL.setRefVel(leftSpeeds);
 	wheelBR.setRefVel(rightSpeeds);
 }
+
+RobotMsgOut Robot::getInfo(uint32_t ticks)
+{
+	WheelMsgOut wheelMSGFR = wheelFR.getWheelMsg(wheel_config::WheelIdx::WheelFR);
+	WheelMsgOut wheelMSGFL = wheelFL.getWheelMsg(wheel_config::WheelIdx::WheelFL);
+	WheelMsgOut wheelMSGBR = wheelBR.getWheelMsg(wheel_config::WheelIdx::WheelBR);
+	WheelMsgOut wheelMSGBL = wheelBL.getWheelMsg(wheel_config::WheelIdx::WheelBL);
+	RobotMsgOut ret(ticks, batVolt.sample(), currentSensor.sample(), wheelMSGFR, wheelMSGFL, wheelMSGBR, wheelMSGBL);
+	return ret;
+}
