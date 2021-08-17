@@ -8,6 +8,12 @@
 
 bool parseFloat(char* buffer, int& pos, uint16_t bufferLen, float& ret);
 
+bool parseUint32(char* buffer, int& pos, uint16_t bufferLen, uint32_t& ret);
+
+bool parseInt32(char* buffer, int& pos, uint16_t bufferLen, int& ret);
+
+bool parseInt16(char* buffer, int& pos, uint16_t bufferLen, int16_t& ret);
+
 bool float2Bytes(char* bufferm, float FloatVarible, int& pos, uint16_t bufferLen);
 
 bool uint322Bytes(char* bufferm, uint32_t uint32Variable, int& pos, uint16_t bufferLen);
