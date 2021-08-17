@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <cstring>
 
+#define PI 3.1415926535
+
 void parseFloat(char* buffer, int& pos, uint16_t bufferLen, float& ret);
 
 void float2Bytes(char* bufferm, float FloatVarible, int& pos);
