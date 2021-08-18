@@ -164,6 +164,19 @@ int main(void)
       robot.parseAndDecide(g_reciveBufferCopied, pos, RECIVE_BUFFER_SIZE);
       g_parseFlag = false;
     }
+
+     /*batVolt.update();
+    curSensor.update();
+    enc1.update();*/
+    if(Ticks- pTicks >= SAMPLING_TICKS){
+      robot.update();
+      robot.run();
+      int pos = 0;
+      RobotMsgOut msg = robot.getInfo(Ticks);
+      msg.convertToBytes(g_sendBuffer, SEND_BUFFER_SIZE, pos);
+      HAL_UART_Transmit_DMA(&huart3,(uint8_t*)g_sendBuffer, 72);
+      pTicks += SAMPLING_TICKS;
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
