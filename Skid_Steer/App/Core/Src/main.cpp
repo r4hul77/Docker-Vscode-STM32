@@ -28,8 +28,6 @@
 #include "usb_otg.h"
 #include "gpio.h"
 
-
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
@@ -97,7 +95,6 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-  
 
   /* USER CODE BEGIN Init */
 
@@ -124,8 +121,6 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM5_Init();
   MX_UART7_Init();
-
-  
   /* USER CODE BEGIN 2 */
   
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *) ADC_Values, ADC_SENSORS);
@@ -170,26 +165,11 @@ int main(void)
       g_parseFlag = false;
     }
     /* USER CODE END WHILE */
-    /*batVolt.update();
-    curSensor.update();
-    enc1.update();*/
-    if(Ticks- pTicks >= SAMPLING_TICKS){
-      robot.update();
-      robot.run();
-      int pos = 0;
-      RobotMsgOut msg = robot.getInfo(Ticks);
-      msg.convertToBytes(g_sendBuffer, SEND_BUFFER_SIZE, pos);
-      HAL_UART_Transmit_DMA(&huart3,(uint8_t*)g_sendBuffer, 72);
-      pTicks += SAMPLING_TICKS;
-    }
-    
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-
 }
-
-
 
 /**
   * @brief System Clock Configuration
@@ -245,7 +225,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 }
 /* USER CODE END 4 */
 
- /**
+/**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM6 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
