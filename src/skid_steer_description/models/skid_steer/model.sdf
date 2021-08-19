@@ -228,5 +228,7 @@
         </geometry>
       </visual>
     </link>
+    <plugin name="GazeboRosTemplate1" filename="libgazebo1_template.so">  
+    </plugin>
   </model>
 </sdf>

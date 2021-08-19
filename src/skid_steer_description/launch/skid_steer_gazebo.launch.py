@@ -46,6 +46,19 @@ def generate_launch_description():
         arguments=[],
     )
 
+    # RQT
+    rqt_reconfig = Node(
+        package='rqt_reconfigure',
+        executable='rqt_reconfigure',
+        arguments=[]
+    )
+
+    rqt = Node(
+        package="rqt_console",
+        executable="rqt_console",
+        arguments=[]
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument(
           'world',
@@ -54,5 +67,7 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='true',
                               description='Open RViz.'),
         gazebo,
-        rviz
+        rviz,
+        rqt,
+        rqt_reconfig
     ])
