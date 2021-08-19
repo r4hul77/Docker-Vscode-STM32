@@ -47,11 +47,6 @@ struct WheelMsgOut
 	}
 };
 
-struct ADCMsgOut
-{
-	float _out;
-};
-
 struct RobotMsgOut
 {
 	uint32_t _time;
