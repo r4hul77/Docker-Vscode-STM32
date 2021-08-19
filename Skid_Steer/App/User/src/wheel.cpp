@@ -22,6 +22,7 @@ void Wheel::update()
 	_ticks = deltaTicks;
 	_pTicks = ticks;
 	_velFilter.update(((float)val / PPR) * (2 * PI) * (float)1000 / deltaTicks);
+	_currentSensor.update();
 
 }
 

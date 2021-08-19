@@ -124,9 +124,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
   
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *) ADC_Values, ADC_SENSORS);
-  ADCParams voltSensor(ADC_Values, 0, 1, 0), currentSensor(ADC_Values, 1, 1, 0),
-            currentFL(ADC_Values, 2, 1, 0), currentFR(ADC_Values, 3, 1, 0),
-            currentBL(ADC_Values, 4, 1, 0), currentBR(ADC_Values, 5, 1, 0);
+  ADCParams voltSensor(ADC_Values, 5,0.00685, 0), currentSensor(ADC_Values, 4, 1, 0),
+            currentFL(ADC_Values, 1, 0.00806, -16.5), currentFR(ADC_Values, 0, 0.00806, -16.5),
+            currentBL(ADC_Values, 3, 0.00806, -16.5), currentBR(ADC_Values, 2, 0.00806, -16.5);
 
   WheelParams wheelFL(RADIUS, htim2, htim1, Motor::channel::CHANNEL2, TIM_CHANNEL_2, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
               wheelFR(RADIUS, htim5, htim1, Motor::channel::CHANNEL1, TIM_CHANNEL_1, PID::PIDParams(1, 0, 0, 50), currentFR, (uint8_t)25),
