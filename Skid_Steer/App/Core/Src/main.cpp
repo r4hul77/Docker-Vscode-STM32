@@ -51,12 +51,15 @@
 #define RADIUS (float)1.0
 #define SAMPLING_TICKS 10
 uint16_t ADC_Values[ADC_SENSORS];
+#define LOGGING_FREQ 500
 volatile uint8_t serialFinished=0;
 char msg [100];
 char g_reciveBuffer [RECIVE_BUFFER_SIZE];
 char g_reciveBufferCopied [RECIVE_BUFFER_SIZE];
 char g_sendBuffer[SEND_BUFFER_SIZE];
 bool g_parseFlag(false);
+FRESULT sdWriteRes; // FatFs Write to SD Card Result
+char log_path[] = "/LOG.TXT"; //Path to file
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -73,7 +76,8 @@ bool g_parseFlag(false);
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+FRESULT AppendToFile(char* path, size_t path_len, char* msg, size_t msg_len);
+void SD_Log(RobotMsgOut& msg);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -145,13 +149,15 @@ int main(void)
 
 
 
-  Robot robot(robotParams);  
+  Robot robot(robotParams);
+  RobotMsgOut msg = robot.getInfo(0);  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint32_t pTicks = HAL_GetTick();
   uint32_t lTicks = HAL_GetTick();
+  uint32_t logTicks = HAL_GetTick();
   while (1)
   { 
     uint32_t Ticks = HAL_GetTick();
@@ -172,10 +178,15 @@ int main(void)
       robot.update();
       robot.run();
       int pos = 0;
-      RobotMsgOut msg = robot.getInfo(Ticks);
+      msg = robot.getInfo(Ticks);
       msg.convertToBytes(g_sendBuffer, SEND_BUFFER_SIZE, pos);
       HAL_UART_Transmit_DMA(&huart3,(uint8_t*)g_sendBuffer, 72);
       pTicks += SAMPLING_TICKS;
+    }
+
+    if(Ticks - logTicks >= LOGGING_FREQ){
+    	SD_Log(msg);
+    	logTicks+= LOGGING_FREQ;
     }
     /* USER CODE END WHILE */
 
@@ -235,6 +246,81 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     g_reciveBufferCopied[i] = g_reciveBuffer[i];
   HAL_UARTEx_ReceiveToIdle_DMA(&huart3,(uint8_t*)g_reciveBuffer, RECIVE_BUFFER_SIZE);
   HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+}
+FRESULT AppendToFile(char* path, size_t path_len, char* msg, size_t msg_len) {
+
+  FATFS fs;
+  FIL myFILE;
+  UINT testByte;
+  FRESULT stat;
+
+  // Bounds check on strings
+  if ( (path[path_len] != 0) || (msg[msg_len] != 0) ) {
+    return FR_INVALID_NAME;
+  }
+
+  // Re-initialize SD
+  if ( BSP_SD_Init() != MSD_OK ) {
+    return FR_NOT_READY;
+  }
+
+  // Re-initialize FATFS
+  if ( FATFS_UnLinkDriver(SDPath) != 0 ) {
+    return FR_NOT_READY;
+  }
+  if ( FATFS_LinkDriver(&SD_Driver, SDPath) != 0 ) {
+    return FR_NOT_READY;
+  }
+
+  // Mount filesystem
+  stat = f_mount(&fs, SDPath, 0);
+  if (stat != FR_OK) {
+    f_mount(0, SDPath, 0);
+    return stat;
+  }
+
+  // Open file for appending
+  stat = f_open(&myFILE, path, FA_WRITE | FA_OPEN_APPEND);
+  if (stat != FR_OK) {
+    f_mount(0, SDPath, 0);
+    return stat;
+  }
+
+  // Write message to end of file
+  stat = f_write(&myFILE, msg, msg_len, &testByte);
+  if (stat != FR_OK) {
+    f_mount(0, SDPath, 0);
+    return stat;
+  }
+
+  // Sync, close file, unmount
+  stat = f_close(&myFILE);
+  f_mount(0, SDPath, 0);
+  return stat;
+
+}
+
+void SD_Log(RobotMsgOut& msg)
+{
+	char buff[sizeof(msg) + 2000];
+	    	sprintf((char*) buff,"Time: %d\t""BatVolt: %.02f\t" "BatCurrent: %.04f\n\r"
+	    			"FR: Ticks: %d\t" "Current:  %.04f A\t" "Vel: %.04f\t" "Output: %.04f\n\r"
+	    			"FL: Ticks: %d\t" "Current:  %.04f A\t" "Vel: %.04f\t" "Output: %.04f\n\r"
+	    			"BR: Ticks: %d\t" "Current:  %.04f A\t" "Vel: %.04f\t" "Output: %.04f\n\r"
+	    			"BL: Ticks: %d\t" "Current:  %.04f A\t" "Vel: %.04f\t" "Output: %.04f\n\r\n\r",
+	    	(int)msg._time, msg.batVolt,msg.current,
+			(int)msg.wheelFR.ticks,msg.wheelFR.current,msg.wheelFR.vel,msg.wheelFR.output,
+			(int)msg.wheelFL.ticks,msg.wheelFL.current,msg.wheelFL.vel,msg.wheelFL.output,
+			(int)msg.wheelBR.ticks,msg.wheelBR.current,msg.wheelBR.vel,msg.wheelBR.output,
+			(int)msg.wheelBL.ticks,msg.wheelBL.current,msg.wheelBL.vel,msg.wheelBL.output);
+	    	sdWriteRes = AppendToFile(log_path, strlen(log_path),buff,strlen(buff));
+	    	if(sdWriteRes == FR_OK )
+	    	{
+	    		HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+
+	    	}
+	    	else
+	    		HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,GPIO_PIN_RESET);
 }
 /* USER CODE END 4 */
 
