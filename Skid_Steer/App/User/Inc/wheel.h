@@ -9,7 +9,6 @@
 #include "encoder.h"
 #include "adc.h"
 #include "utils.h"
-#include "message_in.h"
 #include "message_out.h"
 
 struct WheelParams
@@ -66,11 +65,9 @@ class Wheel
 
 		void run(float bVoltage);
 
-		void setRefVel(float refVel);
+		void setTargetVel(float refVel);
 
-		void parseAndDecide(char* buffer, int& pos, uint16_t bufferLen);
-
-		WheelMsgOut getWheelMsg(wheel_config::WheelIdx id);
+		WheelMsgOut getWheelMsg();
 
 };
 

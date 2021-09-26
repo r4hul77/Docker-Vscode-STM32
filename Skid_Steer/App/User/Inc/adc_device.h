@@ -31,9 +31,7 @@ class AdcDevice
 
 		AdcDevice(ADCParams& params);
 
-		void init();
-
-		void update();
+		void update(); //Updates the sensor value and keeps it internally
 
 		float get_m();
 
@@ -43,9 +41,7 @@ class AdcDevice
 
 		void set_c(float c);
 
-		void parseAndSetParams(char* buffer, int& pos, uint16_t bufferLen);
-
-		float sample();
+		float sample(); //Gives output
 };
 
 #endif

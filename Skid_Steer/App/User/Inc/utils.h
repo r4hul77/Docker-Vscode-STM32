@@ -6,29 +6,18 @@
 
 #define PI 3.1415926535
 
-bool parseFloat(char* buffer, int& pos, uint16_t bufferLen, float& ret);
-
-bool parseUint32(char* buffer, int& pos, uint16_t bufferLen, uint32_t& ret);
-
-bool parseInt32(char* buffer, int& pos, uint16_t bufferLen, int& ret);
-
-bool parseInt16(char* buffer, int& pos, uint16_t bufferLen, int16_t& ret);
-
-bool float2Bytes(char* bufferm, float FloatVarible, int& pos, uint16_t bufferLen);
-
-bool uint322Bytes(char* bufferm, uint32_t uint32Variable, int& pos, uint16_t bufferLen);
-
 
 template <class T>
 struct movingAvgFilter
 {
 	T* filterPts;
-	uint8_t i;
+	uint16_t i;
 	T avg;
 	bool full;
-	uint8_t size;
+	uint16_t size_init;
+	uint16_t size;
 
-	movingAvgFilter(uint8_t size): filterPts(new T[size]), i(0), avg(0), full(false), size(size)
+	movingAvgFilter(uint16_t size): filterPts(new T[size]), i(0), avg(0), full(false), size_init(size), size(size)
 	{
 
 	}
@@ -64,7 +53,19 @@ struct movingAvgFilter
 
 	~movingAvgFilter()
 	{
-		delete filterPts;
+		delete[] filterPts;
 	}
+
+	void setBufferSize(uint16_t set_size)
+	{
+		if (set_size < size_init)
+		{
+			size = set_size;
+			avg = 0;
+			full = false;
+			i = 0;
+		}
+	}
+
 };
 #endif

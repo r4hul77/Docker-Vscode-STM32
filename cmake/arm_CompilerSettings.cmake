@@ -15,7 +15,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	#						-fno-tree-ter -fno-unit-at-a-time")
 							
 	set(COMMON_FLAGS "-mtpcs-frame -mtpcs-leaf-frame -fno-omit-frame-pointer -O0 -specs=nosys.specs -specs=nano.specs")
-	set(LINKER_FLAGS "-lc -lrdimon -u _printf_float")
+	set(LINKER_FLAGS "-lc -lrdimon -u _printf_float ")
 else()
 	set(COMMON_FLAGS "-ffat-lto-objects -fno-builtin")#-flto
 	set(LINKER_FLAGS "-lc -lrdimon -u _printf_float")

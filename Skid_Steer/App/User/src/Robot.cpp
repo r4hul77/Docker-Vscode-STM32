@@ -15,78 +15,10 @@ Robot::Robot(RobotParams& params):
 
 }
 
-void Robot::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen)
+void Robot::setTargetVel(float spV, float spOmega)
 {
-
-	message::Idx msgType = (message::Idx)buffer[pos++];
-	uint8_t msgLen = (uint8_t)buffer[pos++];
-
-	switch (msgType)
-	{
-	case message::Idx::CmdVel:
-	{
-		parseFloat(buffer, pos, msgLen, refV);
-		parseFloat(buffer, pos, msgLen, refOmega);
-		setRefSpeeds();
-		break;
-	}
-	case message::Idx::RobotConfig:
-	{
-		robot_config::ConfigIdx idx = (robot_config::ConfigIdx)buffer[pos++];
-
-		switch (idx)
-		{
-		case robot_config::ConfigIdx::VoltageConfig:
-		{
-			batVolt.parseAndSetParams(buffer, pos, bufferLen);
-			break;
-		}
-		case robot_config::ConfigIdx::CurrentConfig:
-		{
-			currentSensor.parseAndSetParams(buffer, pos, bufferLen);
-			break;
-		}
-		case robot_config::ConfigIdx::GeometryConfig:
-		{
-			parseFloat(buffer, pos, bufferLen, trackWidth);
-			parseFloat(buffer, pos, bufferLen, wheelBase);
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case message::Idx::WheelConfig:
-	{
-		wheel_config::WheelIdx idx = (wheel_config::WheelIdx)buffer[pos++];
-
-		switch (idx)
-		{
-		case wheel_config::WheelIdx::WheelFL:
-			wheelFL.parseAndDecide(buffer, pos, msgLen);
-			break;
-
-		case wheel_config::WheelIdx::WheelFR:
-			wheelFR.parseAndDecide(buffer, pos, msgLen);
-			break;
-
-		case wheel_config::WheelIdx::WheelBR:
-			wheelBR.parseAndDecide(buffer, pos, msgLen);
-			break;
-
-		default:
-			wheelBL.parseAndDecide(buffer, pos, msgLen);
-			break;
-		}
-
-		break;
-	}
-	default:
-
-		break;
-
-	}
+	refV = spV;
+	refOmega = spOmega;
 }
 
 void Robot::update()
@@ -102,36 +34,41 @@ void Robot::update()
 void Robot::run()
 {
 	float voltage = batVolt.sample();
+	setWheelTargetSpeeds();
 	wheelFL.run(voltage);
 	wheelFR.run(voltage);
 	wheelBR.run(voltage);
 	wheelBL.run(voltage);
 }
 
-void Robot::setRefSpeeds()
+void Robot::setWheelTargetSpeeds()
 {
-	//v is velocity, om is angular velocity with x forward and z upwards
-	//lv is velocity of left wheel and rv is velocity of right wheel
-	//tw is track width
-	//2*v = lv + rv
-	//om*0.5*tw = (lv - rv)
-	//lv = v + 0.25*tw*om
-	//rv = v - 0.25*tw*om
+	/*
+	v : velocity,
+	om : angular velocity
+	co-ordinate axis: x forward and z upwards
+	lv : velocity of left wheel
+	rv : velocity of right wheel
+	tw : track width
+	2*v = lv + rv
+	om*0.5*tw = (lv - rv)
+	lv = v + 0.25*tw*om
+	rv = v - 0.25*tw*om */
 	float factor = 0.25 * trackWidth * refOmega;
 	float leftSpeeds  = refV + factor;
 	float rightSpeeds = refV - factor;
-	wheelFL.setRefVel(leftSpeeds);
-	wheelFR.setRefVel(rightSpeeds);
-	wheelBL.setRefVel(leftSpeeds);
-	wheelBR.setRefVel(rightSpeeds);
+	wheelFL.setTargetVel(leftSpeeds);
+	wheelFR.setTargetVel(rightSpeeds);
+	wheelBL.setTargetVel(leftSpeeds);
+	wheelBR.setTargetVel(rightSpeeds);
 }
 
 RobotMsgOut Robot::getInfo(uint32_t ticks)
 {
-	WheelMsgOut wheelMSGFR = wheelFR.getWheelMsg(wheel_config::WheelIdx::WheelFR);
-	WheelMsgOut wheelMSGFL = wheelFL.getWheelMsg(wheel_config::WheelIdx::WheelFL);
-	WheelMsgOut wheelMSGBR = wheelBR.getWheelMsg(wheel_config::WheelIdx::WheelBR);
-	WheelMsgOut wheelMSGBL = wheelBL.getWheelMsg(wheel_config::WheelIdx::WheelBL);
+	WheelMsgOut wheelMSGFR = wheelFR.getWheelMsg();
+	WheelMsgOut wheelMSGFL = wheelFL.getWheelMsg();
+	WheelMsgOut wheelMSGBR = wheelBR.getWheelMsg();
+	WheelMsgOut wheelMSGBL = wheelBL.getWheelMsg();
 	RobotMsgOut ret(ticks, batVolt.sample(), currentSensor.sample(), wheelMSGFR, wheelMSGFL, wheelMSGBR, wheelMSGBL);
 	return ret;
 }

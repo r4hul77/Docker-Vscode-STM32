@@ -26,7 +26,7 @@ void Wheel::update()
 
 }
 
-void Wheel::setRefVel(float refVel)
+void Wheel::setTargetVel(float refVel)
 {
 	_refVel = refVel / _radius;
 }
@@ -39,38 +39,8 @@ void Wheel::run(float bVoltage)
 	_motor.run(voltagePercent);
 }
 
-WheelMsgOut Wheel::getWheelMsg(wheel_config::WheelIdx id)
+WheelMsgOut Wheel::getWheelMsg()
 {
-	return WheelMsgOut(id, velNow, _currentSensor.sample(), _ticks, output);
-}
-
-void Wheel::parseAndDecide(char* buffer, int& pos, uint16_t bufferLen)
-{
-	wheel_config::config idx = (wheel_config::config)buffer[pos++];
-
-	switch (idx)
-	{
-	case wheel_config::config::SetPidGains:
-	{
-		_pidController.parseAndSetParams(buffer, pos, bufferLen);
-
-		break;
-	}
-	case wheel_config::config::CurrentSensorConfig:
-	{
-		_currentSensor.parseAndSetParams(buffer, pos, bufferLen);
-
-		break;
-	}
-	case wheel_config::config::Radius:
-	{
-		parseFloat(buffer, pos, bufferLen, _radius);
-
-		break;
-	}
-	default:
-		break;
-	}
-
+	return WheelMsgOut(velNow, _currentSensor.sample(), _ticks, output);
 }
 

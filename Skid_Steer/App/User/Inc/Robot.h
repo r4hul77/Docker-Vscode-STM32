@@ -3,7 +3,6 @@
 #include "adc_device.h"
 #include "wheel.h"
 #include "PID.h"
-#include "message_in.h"
 
 struct RobotParams
 {
@@ -67,7 +66,9 @@ class Robot
 
 		void update();
 
-		void setRefSpeeds();
+		void setWheelTargetSpeeds();
+
+		void setTargetVel(float spV, float spOmega);
 
 		RobotMsgOut getInfo(uint32_t ticks);
 
