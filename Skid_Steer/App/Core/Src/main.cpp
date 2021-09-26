@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "adc.h"
 #include "dma.h"
 #include "fatfs.h"
@@ -28,13 +29,16 @@
 #include "usb_otg.h"
 #include "gpio.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
-
 #include "Robot.h"
+#include "microros_wrapper.h"
+
 /* USER CODE END Includes */
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
@@ -44,23 +48,19 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define ADC_SENSORS 12
-#define RECIVE_BUFFER_SIZE 2048
-#define SEND_BUFFER_SIZE 2048
 #define TRACKWIDTH 1
 #define WHEELBASE 1
+#define CONTROL_DELAY 10
 #define RADIUS (float)1.0
 #define SAMPLING_TICKS 10
 uint16_t ADC_Values[ADC_SENSORS];
-volatile uint8_t serialFinished=0;
-char msg [100];
-char g_reciveBuffer [RECIVE_BUFFER_SIZE];
-char g_reciveBufferCopied [RECIVE_BUFFER_SIZE];
-char g_sendBuffer[SEND_BUFFER_SIZE];
-bool g_parseFlag(false);
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+
+
 
 /* USER CODE END PM */
 
@@ -68,10 +68,25 @@ bool g_parseFlag(false);
 
 /* USER CODE BEGIN PV */
 
+ADCParams voltSensor(ADC_Values, 5,0.00685, 0), currentSensor(ADC_Values, 4, 1, 0),
+        currentFL(ADC_Values, 1, 0.00806, -16.5), currentFR(ADC_Values, 0, 0.00806, -16.5),
+        currentBL(ADC_Values, 3, 0.00806, -16.5), currentBR(ADC_Values, 2, 0.00806, -16.5);
+
+WheelParams wheelFL(RADIUS, htim2, htim1, Motor::channel::CHANNEL2, TIM_CHANNEL_2, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
+          wheelFR(RADIUS, htim5, htim1, Motor::channel::CHANNEL1, TIM_CHANNEL_1, PID::PIDParams(1, 0, 0, 50), currentFR, (uint8_t)25),
+          wheelBL(RADIUS, htim4, htim1, Motor::channel::CHANNEL4, TIM_CHANNEL_4, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
+          wheelBR(RADIUS, htim3, htim1, Motor::channel::CHANNEL3, TIM_CHANNEL_3, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25);
+
+RobotParams robotParams(wheelFL, wheelFR, wheelBL, wheelBR, voltSensor, currentSensor, 0, 0, WHEELBASE, TRACKWIDTH);
+
+SimplMicroRos g_simplMicroRos(robotParams, "simpl_node");
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -122,67 +137,93 @@ int main(void)
   MX_TIM5_Init();
   MX_UART7_Init();
   /* USER CODE BEGIN 2 */
+
+
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+    /* Start scheduler */
+  osKernelStart();
   
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *) ADC_Values, ADC_SENSORS);
-  ADCParams voltSensor(ADC_Values, 5,0.00685, 0), currentSensor(ADC_Values, 4, 1, 0),
-            currentFL(ADC_Values, 1, 0.00806, -16.5), currentFR(ADC_Values, 0, 0.00806, -16.5),
-            currentBL(ADC_Values, 3, 0.00806, -16.5), currentBR(ADC_Values, 2, 0.00806, -16.5);
-
-  WheelParams wheelFL(RADIUS, htim2, htim1, Motor::channel::CHANNEL2, TIM_CHANNEL_2, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
-              wheelFR(RADIUS, htim5, htim1, Motor::channel::CHANNEL1, TIM_CHANNEL_1, PID::PIDParams(1, 0, 0, 50), currentFR, (uint8_t)25),
-              wheelBL(RADIUS, htim4, htim1, Motor::channel::CHANNEL4, TIM_CHANNEL_4, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25),
-              wheelBR(RADIUS, htim3, htim1, Motor::channel::CHANNEL3, TIM_CHANNEL_3, PID::PIDParams(1, 0, 0, 50), currentFL, (uint8_t)25);
-
-  RobotParams robotParams(wheelFL, wheelFR, wheelBL, wheelBR, voltSensor, currentSensor, 0, 0, WHEELBASE, TRACKWIDTH);
-  //Motor fr(htim1, Motor::channel::CHANNEL1, TIM_CHANNEL_1);
-  //AdcDevice batVolt(voltSensor);
-  //AdcDevice curSensor(currentSensor);
-  //Encoder enc1(htim5);
-
-  //Start UART
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart3,(uint8_t*)g_reciveBuffer, 256);
 
 
 
 
-  Robot robot(robotParams);  
+
+
+
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  uint32_t pTicks = HAL_GetTick();
-  uint32_t lTicks = HAL_GetTick();
+
   while (1)
   { 
-    uint32_t Ticks = HAL_GetTick();
-    if(Ticks - lTicks > 5*SAMPLING_TICKS){
-      HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-      lTicks += 5*SAMPLING_TICKS; 
-    }
-    if(g_parseFlag){
-      int pos = 0;
-      robot.parseAndDecide(g_reciveBufferCopied, pos, RECIVE_BUFFER_SIZE);
-      g_parseFlag = false;
-    }
 
-     /*batVolt.update();
-    curSensor.update();
-    enc1.update();*/
-    if(Ticks- pTicks >= SAMPLING_TICKS){
-      robot.update();
-      robot.run();
-      int pos = 0;
-      RobotMsgOut msg = robot.getInfo(Ticks);
-      msg.convertToBytes(g_sendBuffer, SEND_BUFFER_SIZE, pos);
-      HAL_UART_Transmit_DMA(&huart3,(uint8_t*)g_sendBuffer, 72);
-      pTicks += SAMPLING_TICKS;
     }
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
 }
+
+/* USER CODE END Header_StartDefaultTask */
+
+
+
+
+
+
+
+void StartDefaultTask(void *argument)
+{ 
+  g_simplMicroRos.init();
+
+  for(;;)
+  {
+      rclc_executor_spin(&g_simplMicroRos.m_executor);
+  }
+}
+
+/* USER CODE BEGIN Header_StartControlsTask */
+/**
+* @brief Function implementing the controlsTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartControlsTask */
+void StartControlsTask(void *argument)
+{
+  
+  /* USER CODE BEGIN StartControlsTask */
+  
+  
+  /* Infinite loop */
+  for(;;)
+  {
+    g_simplMicroRos.controls_loop();
+    osDelay(CONTROL_DELAY);
+  }
+  /* USER CODE END StartControlsTask */
+}
+
+/* USER CODE BEGIN Header_StartLedTask */
+/**
+* @brief Function implementing the ledTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartLedTask */
+void StartLedTask(void *argument)
+{
+  /* USER CODE BEGIN StartLedTask */
+  /* Infinite loop */
+  for(;;)
+  {
+      HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+    osDelay(1000);
+  }
+  /* USER CODE END StartLedTask */
+}
+
 
 /**
   * @brief System Clock Configuration
@@ -227,15 +268,7 @@ void SystemClock_Config(void)
   }
 }
 
-/* USER CODE BEGIN 4 */
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
-{
-  g_parseFlag = true;
-  for(int i = 0; i < Size; i++)
-    g_reciveBufferCopied[i] = g_reciveBuffer[i];
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart3,(uint8_t*)g_reciveBuffer, RECIVE_BUFFER_SIZE);
-  HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-}
+
 /* USER CODE END 4 */
 
 /**

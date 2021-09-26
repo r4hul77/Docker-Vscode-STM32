@@ -53,7 +53,14 @@
             "--options=${workspaceFolder}/.astylerc",
         ],
         "files.associations": {
-            "fatfs.h": "c"
+            "fatfs.h": "c",
+            "cstdint": "cpp",
+            "cstring": "cpp",
+            "cmsis_os.h": "c",
+            "config.h": "c",
+            "transport.h": "c",
+            "error_handling.h": "c",
+            "string": "cpp"
         },
     }
 }
