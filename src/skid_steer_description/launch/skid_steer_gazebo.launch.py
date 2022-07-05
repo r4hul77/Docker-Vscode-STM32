@@ -24,10 +24,26 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+import subprocess
+import shlex
+
+
+def source_file(path):
+    command = shlex.split("env -i bash -c 'source '"+path+"' && env'")
+    proc = subprocess.Popen(command, stdout = subprocess.PIPE)
+    for line in proc.stdout:
+        (key, _, value) = list(map(lambda x: x.decode(), line.partition(b'=')))
+        value = value.strip("\n")
+        if(key in os.environ):
+            os.environ[key] = ":".join([value, os.environ[key]])
+        else:
+            os.environ[key] = value
+        print(f"{key} : {os.environ[key]}")
+    proc.communicate()
 
 
 def generate_launch_description():
-
+    source_file('/usr/share/gazebo/setup.bash')
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
     pkg_skid_gazebo = get_package_share_directory('skid_steer_description')
 
@@ -62,7 +78,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
           'world',
-          default_value=[os.path.join(pkg_skid_gazebo, 'worlds', 'dolly_empty.world'), ''],
+          default_value=[os.path.join(pkg_skid_gazebo, 'worlds', 'skid_steer_empty.world'), ''],
           description='SDF world file'),
         DeclareLaunchArgument('rviz', default_value='true',
                               description='Open RViz.'),
