@@ -9,4 +9,4 @@ This is work is moslty git cloned from https://github.com/MuratovAS/VScode_Docke
 * Have Docker Installed from https://docs.docker.com/get-docker/
 * Have Vscode Installed from https://code.visualstudio.com/
 * Have STM32CubeMx Installed from https://www.st.com/en/development-tools/stm32cubemx.html
-* Run the following command <git clone https://github.com/r4hul77/Docker-Vscode-STM32.git>
+* Run the following command < git clone https://github.com/r4hul77/Docker-Vscode-STM32.git >
